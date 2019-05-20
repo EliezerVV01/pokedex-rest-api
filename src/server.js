@@ -6,7 +6,7 @@
 
 var app = require('./app');
 var debug = require('debug')('pokedex-rest-api:server');
-var http = require('http');
+http = require('http');
 
 /**
  * Get port from environment and store in Express.
