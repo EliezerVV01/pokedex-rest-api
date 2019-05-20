@@ -7,6 +7,25 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+/*Testing sequelize*/
+const Sequelize = require('sequelize');
+
+// Option 1: Passing parameters separately
+const sequelize = new Sequelize('pokedex', 'postgres', 'sinsentido', {
+  host: 'localhost',
+  dialect: 'postgres' 
+});
+
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
+
+
 var app = express();
 
 // view engine setup
