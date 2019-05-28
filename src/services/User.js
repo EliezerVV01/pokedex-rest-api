@@ -58,22 +58,22 @@ class UserService {
       }
       const userWithEmail = await this.getUserByEmail(userToCreate.email);
       if (userWithEmail.id != null) {
-        const error = new Error('Email already exist in the database!');
+        const error = new Error('Email already exists in the database!');
         error.code = 409;
         throw error;
       }
 
       const userWithUsername = await this.getUserByUsername(userToCreate.userName);
       if (userWithUsername.id != null) {
-        const error = new Error('Username already exist in the database!');
+        const error = new Error('Username already exists in the database!');
         error.code = 409;
         throw error;
       }
       userToCreate.password = await Password.hash(userToCreate.password);
       const pushedUser = await UserRepository.addUser(userToCreate, currentTransaction);
       await currentTransaction.commit();
-      const token = Token.generateToken(pushedUser.id, CONFIG.email_validation_secret, 15);
-      EmailSender.sendEmail(pushedUser.email, 'Verify your account', `<p>You need to click the next link to verify your account: ${token}</p>`);
+      const token = Token.generateToken(pushedUser.id, CONFIG.email_validation_secret, 10000);
+      EmailSender.sendEmail(pushedUser.email, 'Verify your account', `<p>You need to click the next link to verify your account: ${CONFIG.webapp_link}/${token} </p>`);
       return pushedUser;
     } catch (error) {
       await currentTransaction.rollback();

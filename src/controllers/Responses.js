@@ -23,13 +23,19 @@ class Responses {
     return { status: 500, body };
   }
 
+  static getErrorMessage(message) {
+    return {
+      errorMessage: message,
+    }
+  }
+
   static createErrorResponse(err) {
     switch (err.code) {
-      case 400: return this.responseBadRequest({ body: err.message });
-      case 401: return this.responseUnauthorized({ body: err.message });
-      case 409: return this.responseConclict({ body: err.message });
-      case 500: return this.responseInternalServerError({ body: err.message });
-      default: return this.responseInternalServerError({ body: err.message });
+      case 400: return this.responseBadRequest({ body: this.getErrorMessage(err.message) });
+      case 401: return this.responseUnauthorized({ body: this.getErrorMessage(err.message) });
+      case 409: return this.responseConclict({ body: this.getErrorMessage(err.message) });
+      case 500: return this.responseInternalServerError({ body: this.getErrorMessage(err.message) });
+      default: return this.responseInternalServerError({ body: this.getErrorMessage(err.message) });
     }
   }
 }

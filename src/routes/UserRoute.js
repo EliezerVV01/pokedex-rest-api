@@ -20,7 +20,7 @@ class UserRoute {
     return res.status(httpResponse.status).json(httpResponse.body);
   }
 
-  async getAllUsers(res) {
+  async getAllUsers(req, res) {
     const httpResponse = await UserController.getAll();
     return res.status(httpResponse.status).json(httpResponse.body);
   }

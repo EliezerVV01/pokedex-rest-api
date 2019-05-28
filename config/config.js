@@ -19,5 +19,9 @@ CONFIG.email_user = process.env.EMAIL_USER;
 CONFIG.email_pass = process.env.EMAIL_PASS;
 CONFIG.email_validation_secret = process.env.EMAIL_VALIDATION_SECRET;
 
+//WebApp Config
+
+CONFIG.webapp_link = process.env.WEBAPP_LINK || 'http://localhost:3000/validate';
+
 
 module.exports = CONFIG;
