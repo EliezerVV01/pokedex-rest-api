@@ -7,6 +7,7 @@ class UserRoute {
     router.get('/', this.getAllUsers);
     router.post('/create', this.createUser);
     router.post('/verifyemail', this.verifyEmail);
+    router.post('/login', this.login);
     return router;
   }
 
@@ -19,6 +20,12 @@ class UserRoute {
     const httpResponse = await UserController.checkEmail(req.body.token);
     return res.status(httpResponse.status).json(httpResponse.body);
   }
+
+  async login(req, res) {
+    const httpResponse = await UserController.login(req.body.user);
+    return res.status(httpResponse.status).json(httpResponse.body);
+  }
+
 
   async getAllUsers(req, res) {
     const httpResponse = await UserController.getAll();

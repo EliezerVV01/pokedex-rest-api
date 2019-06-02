@@ -1,10 +1,10 @@
-const Password = require('./../utils/Password');
 const UserRepository = require('./../Respotories/User');
 const UserModel = require('./../models/User');
 const UserValidator = require('../utils/validators/User');
 const EmailSender = require('./../utils/Email');
 const Token = require('./../utils/Token');
 const CONFIG = require('./../../config/config');
+const bcrypt = require('bcrypt');
 
 class UserService {
   static async getUserByUsername(username) {
@@ -52,24 +52,24 @@ class UserService {
     const currentTransaction = await UserModel.sequelize.transaction();
     try {
       if (!UserValidator.validate(userToCreate)) {
-        const error = new Error('Adding null to fields or a field no null allow');
+        const error = new Error('Adding null to user fields or field no null allow');
         error.code = 400;
         throw error;
       }
       const userWithEmail = await this.getUserByEmail(userToCreate.email);
       if (userWithEmail.id != null) {
-        const error = new Error('Email already exists in the database!');
+        const error = new Error('That email already exists in the database!');
         error.code = 409;
         throw error;
       }
 
       const userWithUsername = await this.getUserByUsername(userToCreate.userName);
       if (userWithUsername.id != null) {
-        const error = new Error('Username already exists in the database!');
+        const error = new Error('That username already exists in the database!');
         error.code = 409;
         throw error;
       }
-      userToCreate.password = await Password.hash(userToCreate.password);
+      userToCreate.password = await bcrypt.hash(userToCreate.password, 10);
       const pushedUser = await UserRepository.addUser(userToCreate, currentTransaction);
       await currentTransaction.commit();
       const token = Token.generateToken(pushedUser.id, CONFIG.email_validation_secret, 10000);
@@ -77,6 +77,28 @@ class UserService {
       return pushedUser;
     } catch (error) {
       await currentTransaction.rollback();
+      throw error;
+    }
+  }
+
+  static async login(_user) {
+    try {
+      const user = await UserRepository.login(_user);
+      if (user) {
+        const match = await bcrypt.compare(_user.password, user.password);
+        if (match) {
+          const gettedToken = Token.generateToken(user.id, CONFIG.auth_token_secret, 10000);
+          const tokenData = {
+            token: gettedToken,
+          };
+          return tokenData;
+        }
+      }
+      const error = new Error('Sorry, but We dont know this user!');
+      error.code = 401;
+      throw error;
+      
+    } catch (error) {
       throw error;
     }
   }

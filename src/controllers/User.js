@@ -14,6 +14,13 @@ class UserController extends Responses {
       .catch(err => this.createErrorResponse(err));
   }
 
+  static async login(user) {
+    return UserService.login(user)
+      .then(token => this.responseOK({ body: token }))
+      .catch(err => this.createErrorResponse(err));
+  }
+
+
   static async getAll() {
     return UserService.getUsers()
       .then(gettedUsers => this.responseOK({ body: gettedUsers }))

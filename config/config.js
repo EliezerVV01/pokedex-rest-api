@@ -17,11 +17,13 @@ CONFIG.db_dialect = process.env.DB_DIALECT || 'postgres';
 CONFIG.email_service = process.env.EMAIL_SERVICE || 'google';
 CONFIG.email_user = process.env.EMAIL_USER;
 CONFIG.email_pass = process.env.EMAIL_PASS;
-CONFIG.email_validation_secret = process.env.EMAIL_VALIDATION_SECRET;
+CONFIG.email_validation_secret = process.env.EMAIL_VALIDATION_SECRET || 'shh';
 
 //WebApp Config
 
 CONFIG.webapp_link = process.env.WEBAPP_LINK || 'http://localhost:3000/validate';
 
+//Auth config
+CONFIG.auth_token_secret = process.env.AUTH_TOKEN_SECRET || 'shhh';
 
 module.exports = CONFIG;
