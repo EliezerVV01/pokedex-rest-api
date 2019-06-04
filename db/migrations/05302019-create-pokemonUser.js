@@ -14,12 +14,12 @@ module.exports = {
         },
         allowNull: false,
       },
-      userId: {
-        type: Sequelize.INTEGER,
+      userEmail: {
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
           model: 'Users',
-          key: 'id',
+          key: 'email',
         },
       },
       captured: {
@@ -34,10 +34,9 @@ module.exports = {
         type: Sequelize.FLOAT,
         allowNull: true,
       },
-      time: {
+      date: {
         type: Sequelize.DATEONLY,
         allowNull: false,
-        defaultValue: Sequelize.NOW,
       },
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE,

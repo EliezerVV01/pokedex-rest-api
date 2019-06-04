@@ -6,11 +6,11 @@ module.exports = {
         primaryKey: true,
         autoIncrement: true,
       },
-      pokemonName: {
-        type: Sequelize.STRING(100),
+      pokemonId: {
+        type: Sequelize.INTEGER,
         references: {
           model: 'Pokemons',
-          key: 'name',
+          key: 'id',
         },
         allowNull: false,
       },

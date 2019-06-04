@@ -2,7 +2,7 @@ const axios = require('axios');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const pokemons = await axios.get('https://pokeapi.co/api/v2/pokemon/');
+    const pokemons = await axios.get('https://pokeapi.co/api/v2/pokemon/?limit=50');
     const pokemonsArr = pokemons.data.results;
     const requests = [];
     const relations = [];
@@ -11,7 +11,7 @@ module.exports = {
         .then((response) => {
           response.data.types.map((type) => {
             relations.push({
-              pokemonName: item.name,
+              pokemonId: response.data.id,
               typeName: type.type.name,
             });
           });
