@@ -7,13 +7,19 @@ class PokemonService {
     return gettedPokemons;
   }
 
+  static async checkPokemon(pokemonId, userEmail) {
+    const gettedPokemons = await PokemonRepository.checkPokemon(pokemonId, userEmail);
+    return gettedPokemons;
+  }
+
   static async addPokemon(req) {
     const currentTransaction = await PokemonModel.sequelize.transaction();
     try {
       const {
-        pokemonId, userEmail, captured,
+        pokemonId, captured,
         locationLatitude, locationLongitude, date,
       } = req.body.pokemon;
+      const userEmail = req.decoded.data.email;
 
       const newPokemon = {
         pokemonId,
@@ -23,8 +29,9 @@ class PokemonService {
         locationLongitude,
         date,
       };
-      const pokemon = await this.getPokemonsByName(newPokemon.name);
-      if (!pokemon.pokemonId) {
+
+      const pokemon = await this.checkPokemon(newPokemon.pokemonId, newPokemon.userEmail);
+      if (pokemon) {
         const error = new Error('You have this pokemon!');
         error.code = 409;
         throw error;

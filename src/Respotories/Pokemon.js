@@ -4,6 +4,20 @@ const PokemonWithNameMapper = require('../Domain/mappers/PokemonWithName');
 const sequelize = require('./../../config/sequelize');
 
 class PokemonRepository {
+
+  static async checkPokemon(pokemonId, userEmail) {
+    return PokemonUserModel.findOne({
+      where: {
+        pokemonId: pokemonId,
+        userEmail: userEmail,
+      },
+    })
+      .then(foundPokemon => (foundPokemon ? foundPokemon.dataValues : null))
+      .catch((err) => {
+        throw new Error(err);
+      });
+  }
+
   static async getPokemonsbyName(name) {
     const Op = sequelize.Op;
     return PokemonModel.findAll({
