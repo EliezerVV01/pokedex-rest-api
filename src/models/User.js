@@ -1,4 +1,5 @@
 const sequelize = require('./../../config/sequelize');
+const Pokemon = require('./Pokemon');
 
 const User = sequelize.define('User', {
   id: {
@@ -53,8 +54,8 @@ const User = sequelize.define('User', {
     defaultValue: false,
   },
 
-}, {
-  tableName: 'Users',
-});
+}, { tableName: 'Users' });
+
+
 
 module.exports = User;

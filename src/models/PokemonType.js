@@ -6,20 +6,20 @@ const PokemonType = sequelize.define('PokemonType', {
     primaryKey: true,
     autoIncrement: true,
   },
-  pokemonName: {
+  pokemonId: {
     type: sequelize.Sequelize.DataTypes.STRING,
     allowNull: false,
     references: {
       model: 'Pokemons',
-      key: 'name',
+      key: 'id',
     },
   },
-  typeName: {
+  typeId: {
     type: sequelize.Sequelize.DataTypes.STRING,
     allowNull: false,
     references: {
       model: 'Types',
-      key: 'name',
+      key: 'id',
     },
   },
 

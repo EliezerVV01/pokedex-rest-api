@@ -6,8 +6,17 @@ class PokemonRoute {
   get router() {
     const router = new Router();
     router.get('/', this.getAllPokemons);
-    router.post('/add', middleware.checkToken, this.addPokemon);
+    router.post('/', middleware.checkToken, this.addPokemon);
+    router.get('/:id', middleware.checkToken, this.getPokemonsWithTypeAndCatch);
     return router;
+  }
+
+  async getPokemonsWithTypeAndCatch(req, res){
+    const userId = req.decoded.data.id;
+    const pokemonId = req.params.id;
+    const httpResponse = await PokemonController.getPokemonsWithTypeAndCatch(userId, pokemonId);
+    return res.status(httpResponse.status).json(httpResponse.body);
+
   }
 
   async getAllPokemons(req, res) {
@@ -16,7 +25,9 @@ class PokemonRoute {
   }
 
   async addPokemon(req, res) {
-    const httpResponse = await PokemonController.addPokemon(req);
+    const userId = req.decoded.data.id;
+    const pokemon = req.body.pokemon;
+   const httpResponse = await PokemonController.addPokemon(userId, pokemon);
     return res.status(httpResponse.status).json(httpResponse.body);
   }
 }

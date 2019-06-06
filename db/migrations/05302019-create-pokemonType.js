@@ -14,12 +14,12 @@ module.exports = {
         },
         allowNull: false,
       },
-      typeName: {
-        type: Sequelize.STRING(100),
+      typeId: {
+        type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: 'Types',
-          key: 'name',
+          key: 'id',
         },
       },
       createdAt: Sequelize.DATE,

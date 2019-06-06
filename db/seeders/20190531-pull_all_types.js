@@ -11,8 +11,6 @@ module.exports = {
         });
         return queryInterface.bulkInsert('Types', types, {});
       });
-
-
   },
 
   down: (queryInterface, Sequelize) => {

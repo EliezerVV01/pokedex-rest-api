@@ -6,8 +6,13 @@ const EmailSender = require('./../utils/Email');
 const Token = require('./../utils/Token');
 const CONFIG = require('./../../config/config');
 
-
 class UserService {
+  static async getUserWithPokemons(id) {
+    const gettedUserWithPokemons = await UserRepository.getUserWithPokemons(id);
+    return gettedUserWithPokemons;
+
+  }
+
   static async getUserByUsername(username) {
     const gettedUser = await UserRepository.getUserByUsername(username);
     return gettedUser;

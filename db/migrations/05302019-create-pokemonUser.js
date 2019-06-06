@@ -14,12 +14,12 @@ module.exports = {
         },
         allowNull: false,
       },
-      userEmail: {
-        type: Sequelize.STRING,
+      userId: {
+        type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: 'Users',
-          key: 'email',
+          key: 'id',
         },
       },
       captured: {

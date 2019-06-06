@@ -6,20 +6,25 @@ module.exports = {
     const pokemonsArr = pokemons.data.results;
     const requests = [];
     const relations = [];
-    pokemonsArr.map((item) => {
-      requests.push(axios.get(item.url)
+    pokemonsArr.map((pokemon) => {
+      requests.push(axios.get(pokemon.url)
         .then((response) => {
           response.data.types.map((type) => {
+            let typeUrl = type.type.url;
+            let idString = typeUrl.substring(
+              typeUrl.lastIndexOf("type/") + 5, typeUrl.length - 1
+          );
+            let id = parseInt(idString);
             relations.push({
               pokemonId: response.data.id,
-              typeName: type.type.name,
+              typeId: id,
             });
           });
         }));
     });
     await axios.all(requests)
       .catch(err => console.log(err));
-    return queryInterface.bulkInsert('PokemonType', relations, {});
+   return queryInterface.bulkInsert('PokemonType', relations, {});
   },
 
   down: (queryInterface, Sequelize) => {

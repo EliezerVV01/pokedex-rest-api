@@ -1,7 +1,5 @@
 const sequelize = require('../../config/sequelize');
-
-const Type = require('./Type');
-const PokemonType = require('./PokemonType');
+const User = require('./User');
 
 const Pokemon = sequelize.define('Pokemon', {
   id: {
@@ -27,8 +25,5 @@ const Pokemon = sequelize.define('Pokemon', {
   },
 
 }, { tableName: 'Pokemons' });
-
-/*Type.belongsToMany(Pokemon, { through: PokemonType });*/
-
 
 module.exports = Pokemon;

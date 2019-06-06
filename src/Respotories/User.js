@@ -1,9 +1,38 @@
 const UserModel = require('./../models/User');
 const UserMapper = require('../Domain/mappers/User');
 const sequelize = require('./../../config/sequelize');
+const PokemonModel = require('./../models/Pokemon');
+const PokemonUser = require('./../models/PokemonUser');
+require('../models/relations');
 
 
 class UserRepository {
+  static async getUserWithPokemons(_id) {
+    return UserModel.findOne({
+      include: [{
+        model: PokemonModel,
+        as: 'pokemons',
+        required: false,
+        attributes: ['id', 'name', 'picture'],
+        through: { attributes: [] },
+      }],
+      where: {
+        id: _id,
+      },
+    }).then(foundUser =>{
+      if(!foundUser.dataValues) foundUser
+      const userWithPokemon = foundUser.dataValues; 
+      const {id, userName, firstName, lastName, email, gender, address, birthDate, picture, pokemons} = userWithPokemon;
+      const userWithPokemonMapped = {
+         id, userName, firstName, lastName, email, gender, address, birthDate, picture, pokemons,
+      };
+      return userWithPokemonMapped;
+    })
+      .catch((err) => {
+        console.log(err);
+        throw new Error(err);
+      });
+  }
 
   static async getUserByUsername(_username) {
     return UserModel.findOne({ where: { userName: _username } })

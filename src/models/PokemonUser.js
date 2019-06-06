@@ -7,20 +7,20 @@ const PokemonUser = sequelize.define('PokemonUser', {
     autoIncrement: true,
   },
   pokemonId: {
-    type: sequelize.Sequelize.DataTypes.STRING,
-    allowNull: false,
+    type: sequelize.Sequelize.DataTypes.INTEGER,
     references: {
-      model: 'Pokemons',
+      model: 'Pokemon',
       key: 'id',
     },
-  },
-  userEmail: {
-    type: sequelize.Sequelize.DataTypes.STRING,
     allowNull: false,
+  },
+  userId: {
+    type: sequelize.Sequelize.DataTypes.STRING,
     references: {
-      model: 'Users',
-      key: 'email',
+      model: 'User',
+      key: 'id',
     },
+    allowNull: false,
   },
   captured: {
     type: sequelize.Sequelize.DataTypes.INTEGER,
