@@ -8,7 +8,24 @@ class PokemonRoute {
     router.get('/', this.getAllPokemons);
     router.post('/', middleware.checkToken, this.addPokemon);
     router.get('/:id', middleware.checkToken, this.getPokemonsWithTypeAndCatch);
+    router.put('/:id', middleware.checkToken, this.editPokemonCatch);
+    router.delete('/:id', middleware.checkToken, this.deletePokemon);
     return router;
+  }
+
+  async deletePokemon(req, res){
+    const userId = req.decoded.data.id;
+    const pokemonId = req.params.id;
+    const httpResponse = await PokemonController.deletePokemon(userId, pokemonId);
+    return res.status(httpResponse.status).json(httpResponse.body);
+  }
+
+  async editPokemonCatch(req, res){
+    const userId = req.decoded.data.id;
+    const pokemonId = req.params.id;
+    const pokemonUser = req.body.pokemonUser;
+    const httpResponse = await PokemonController.editPokemonCatch(pokemonUser, userId, pokemonId);
+    return res.status(httpResponse.status).json(httpResponse.body);
   }
 
   async getPokemonsWithTypeAndCatch(req, res){

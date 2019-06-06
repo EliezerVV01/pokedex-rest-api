@@ -26,4 +26,7 @@ CONFIG.webapp_link = process.env.WEBAPP_LINK || 'http://localhost:3000/validate'
 //Auth config
 CONFIG.auth_token_secret = process.env.AUTH_TOKEN_SECRET || 'shhh';
 
+//Reset config
+CONFIG.reset_pass_token_secret = process.env.RESET_PASS_TOKEN_SECRET || 'shhhh';
+
 module.exports = CONFIG;

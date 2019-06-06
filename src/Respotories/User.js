@@ -43,7 +43,7 @@ class UserRepository {
   }
 
   static async getUserByEmail(_email) {
-    return UserModel.findOne({ where: { email: _email } })
+    return UserModel.findOne({ where: { email: _email} })
       .then(foundUser => UserMapper.map(foundUser))
       .catch((err) => {
         throw new Error(err);

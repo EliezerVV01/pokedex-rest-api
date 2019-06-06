@@ -23,6 +23,25 @@ class UserService {
     return gettedUser;
   }
 
+  static async sendTokenForPass(email) {
+    const user = await this.getUserByEmail;
+    if (!user.id) {
+      const err = new Error("There's no user with that email!");
+      err.code = 404;
+      throw err;
+    }
+    const token = Token.generateToken(user.id, CONFIG.reset_pass_token_secret, 10);
+    await EmailSender.sendEmail(
+      email,
+      'Reset password',
+      `<p>You need to click the next link to reset your password: ${CONFIG.webapp_link}/${token} </p>`,
+    );
+    const response = {
+      token,
+    };
+    return response;
+  }
+
   static async validateUser(userId) {
     const currentTransaction = await UserModel.sequelize.transaction();
     try {
@@ -65,7 +84,7 @@ class UserService {
       }
       userToCreate.password = await bcrypt.hash(userToCreate.password, 10);
       const pushedUser = await UserRepository.addUser(userToCreate, currentTransaction);
-      const token = Token.generateToken(pushedUser.id, CONFIG.email_validation_secret, 10000);
+      const token = Token.generateToken(pushedUser.id, CONFIG.email_validation_secret, 15);
       EmailSender.sendEmail(pushedUser.email, 'Verify your account', `<p>You need to click the next link to verify your account: ${CONFIG.webapp_link}/${token} </p>`);
       await currentTransaction.commit();
       return pushedUser;

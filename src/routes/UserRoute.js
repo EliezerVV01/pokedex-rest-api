@@ -10,6 +10,7 @@ class UserRoute {
     router.put('/verifyemail', this.verifyEmail);
     router.post('/login', this.login);
     router.get('/user-pokemons', middleware.checkToken, this.getUserWithPokemons);
+    router.post('/tokenpassword', this.sendTokenForPass);
     return router;
   }
 

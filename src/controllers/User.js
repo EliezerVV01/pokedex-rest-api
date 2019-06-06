@@ -2,10 +2,16 @@ const UserService = require('../services/User');
 const Responses = require('./Responses');
 
 class UserController extends Responses {
-  static async getUserWithPokemons(id){
+  static async getUserWithPokemons(id) {
     return UserService.getUserWithPokemons(id)
-    .then(userWithPokemons => this.responseOK({ body: userWithPokemons }))
-    .catch(err => this.createErrorResponse(err));
+      .then(userWithPokemons => this.responseOK({ body: userWithPokemons }))
+      .catch(err => this.createErrorResponse(err));
+  }
+
+  static async sendTokenForPass(email) {
+    return UserService.sendTokenForPass(email)
+      .then(token => this.responseOK({ body: token }))
+      .catch(err => this.createErrorResponse(err));
   }
 
   static async addUser(user) {

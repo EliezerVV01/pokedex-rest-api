@@ -35,7 +35,7 @@ class PokemonRepository {
       });
   }
 
-  static async getPokemonWithTypes(_pokemonId){
+  static async getPokemonWithTypes(_pokemonId) {
     return PokemonModel.findOne({
       include: [{
         model: TypeModel,
@@ -48,47 +48,69 @@ class PokemonRepository {
         id: _pokemonId,
       },
     })
-    .then((foundPokemonWithTypes)=>{
-      if(!foundPokemonWithTypes){
-         return foundPokemonWithTypes;
-      }
-      const {id, name, height, wight, picture, baseExperience, types} = foundPokemonWithTypes;
-      const foundPokemonWithTypesMapped = {
-        id, name, height, wight, picture, baseExperience, types
-      }
-      return foundPokemonWithTypesMapped;
-    })
-    .catch((err) => {
-      throw new Error(err);
-    });
+      .then((foundPokemonWithTypes) => {
+        if (!foundPokemonWithTypes) {
+          return foundPokemonWithTypes;
+        }
+        const { id, name, height, wight, picture, baseExperience, types } = foundPokemonWithTypes;
+        const foundPokemonWithTypesMapped = {
+          id, name, height, wight, picture, baseExperience, types
+        }
+        return foundPokemonWithTypesMapped;
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
   }
 
-  static async getPokemonsWithCatch(_userId, _pokemonId){
-      return PokemonUserModel.findOne({
-        where: {
-          pokemonId: _pokemonId,
-          userId: _userId
-        }
-      }).then((gettedPokemon) =>{
-        if(!gettedPokemon){
-          return gettedPokemon;
-        }
-          const {
-            id, pokemonId, userId, captured, locationLatitude, locationLongitude, date
-          } = gettedPokemon;
+  static async getPokemonsWithCatch(_userId, _pokemonId) {
+    return PokemonUserModel.findOne({
+      where: {
+        pokemonId: _pokemonId,
+        userId: _userId
+      }
+    }).then((gettedPokemon) => {
+      if (!gettedPokemon) {
+        return gettedPokemon;
+      }
+      const {
+        id, pokemonId, userId, captured, locationLatitude, locationLongitude, date
+      } = gettedPokemon;
 
-          const pokemonMaped = {
-            id, pokemonId, userId, captured,
-             locationLatitude, locationLongitude,
-              date
-          }
+      const pokemonMaped = {
+        id, pokemonId, userId, captured,
+        locationLatitude, locationLongitude,
+        date
+      }
 
-          return pokemonMaped;
-      }).catch(err =>{ throw new Error(err)});
+      return pokemonMaped;
+    }).catch(err => { throw new Error(err) });
+  }
+
+  static async editPokemonCatch(pokemonUser, _userId, _pokemonId, transaction) {
+    return PokemonUserModel.update(pokemonUser, {
+      transaction,
+      where: {
+        pokemonId: _pokemonId,
+        userId: _userId,
+      },
+    }).then((editedPokemon) => {
+      return editedPokemon;
+    }).catch((err) => { throw new Error(err); });
+  }
+
+  static async deletePokemon(_userId, _pokemonId, transaction) {
+    return PokemonUserModel.destroy({
+      transaction,
+      where: {
+        pokemonId: _pokemonId,
+        userId: _userId,
+      },
+    }).then(response => response)
+      .catch((err) => { throw new Error(err); });
   }
 
   static async addPokemon(pokemon, transaction) {
-  
     return PokemonUserModel.create(pokemon, { transaction })
       .then((addedPokemon) => {
         const {
