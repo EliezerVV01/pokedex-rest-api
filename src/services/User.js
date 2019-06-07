@@ -23,8 +23,61 @@ class UserService {
     return gettedUser;
   }
 
+  static async updateUser(userId, user) {
+    const currentTransaction = await UserModel.sequelize.transaction();
+    try {
+      if(!user){
+        const error = new Error('Missing user object');
+        error.code=400;
+        throw error;
+      }
+      await UserRepository.updateUser(userId, user, currentTransaction);
+      currentTransaction.commit();
+      const updatedUser = await this.getUserById(userId);
+      return updatedUser;
+    } catch (error) {
+      currentTransaction.rollback();
+      throw error;
+    }
+  }
+
+  static async getUserById(userId) {
+    //This method returns the user by the id indicated
+    const gettedUser = await UserRepository.getUserById(userId);
+    if (!gettedUser.id || !gettedUser) {
+      const err = new Error('User not found');
+      err.code = 404;
+      throw err;
+    }
+    return gettedUser;
+  }
+
+  static async resetPassword(token, password) {
+    //This method take a token, verify it and set the password in the id getted in the token
+    const currentTransaction = await UserModel.sequelize.transaction();
+    try {
+      if (!password) {
+        const err = new Error('Password is null, and it cant be');
+        err.code = 409;
+        return err;
+      }
+      const decodedToken = Token.verifyToken(token, CONFIG.reset_pass_token_secret);
+      const userId = decodedToken.data;
+      const passwordHashed = await bcrypt.hash(password, 10);
+      const response = await UserRepository.resetPassword(userId, passwordHashed, currentTransaction);
+      currentTransaction.commit();
+      return response;
+    } catch (error) {
+      currentTransaction.rollback();
+      throw error;
+    }
+
+
+  }
+
   static async sendTokenForPass(email) {
-    const user = await this.getUserByEmail;
+    //this method create a poken and send it to the email provided
+    const user = await this.getUserByEmail(email);
     if (!user.id) {
       const err = new Error("There's no user with that email!");
       err.code = 404;
@@ -34,15 +87,16 @@ class UserService {
     await EmailSender.sendEmail(
       email,
       'Reset password',
-      `<p>You need to click the next link to reset your password: ${CONFIG.webapp_link}/${token} </p>`,
+      `<p>You need to click the next link to reset your password: ${CONFIG.webapp_link_rest_pass}/${token} </p>`,
     );
     const response = {
-      token,
+      response: 'Great!',
     };
     return response;
   }
 
   static async validateUser(userId) {
+    //This method call use the repository and pass it the id of the user so that a user can be set to validated=true
     const currentTransaction = await UserModel.sequelize.transaction();
     try {
       const validatedUser = await UserRepository.validateUser(userId, currentTransaction);
@@ -55,12 +109,14 @@ class UserService {
   }
 
   static async checkEmail(token) {
+    //This methods recieve a token and get the id of a user from it and call the validate method passing the userId
     const decodedToken = Token.verifyToken(token, CONFIG.email_validation_secret);
     const userId = decodedToken.data;
     await this.validateUser(userId);
   }
 
   static async addUser(user) {
+    //This methods recieve a user and pass it to the repository to created with validated as false by default
     const userToCreate = user;
     const currentTransaction = await UserModel.sequelize.transaction();
     try {
@@ -95,19 +151,24 @@ class UserService {
   }
 
   static async login(_user) {
+    //This methods recieve a user with pass and email or user name 
+    //and pass it to the login in the repository which check if the email
+    // or username provided exists and if its validated then recieve the user getted with the data and 
+    // compare it with the password send it in the fist time
     const user = await UserRepository.login(_user);
     if (user) {
       const match = await bcrypt.compare(_user.password, user.password);
       if (match) {
         const gettedToken = Token.generateToken({ id: user.id, name: user.name, email: user.email },
           CONFIG.auth_token_secret, 10000);
-        const tokenData = {
+        const data = {
+          email: user.email,
           token: gettedToken,
         };
-        return tokenData;
+        return data;
       }
     }
-    const error = new Error('Sorry, but We dont know this user!');
+    const error = new Error('Sorry, but We dont know this user with this password!');
     error.code = 401;
     throw error;
   }

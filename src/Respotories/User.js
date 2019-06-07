@@ -2,7 +2,6 @@ const UserModel = require('./../models/User');
 const UserMapper = require('../Domain/mappers/User');
 const sequelize = require('./../../config/sequelize');
 const PokemonModel = require('./../models/Pokemon');
-const PokemonUser = require('./../models/PokemonUser');
 require('../models/relations');
 
 
@@ -19,12 +18,12 @@ class UserRepository {
       where: {
         id: _id,
       },
-    }).then(foundUser =>{
-      if(!foundUser.dataValues) foundUser
-      const userWithPokemon = foundUser.dataValues; 
-      const {id, userName, firstName, lastName, email, gender, address, birthDate, picture, pokemons} = userWithPokemon;
+    }).then(foundUser => {
+      if (!foundUser.dataValues) foundUser
+      const userWithPokemon = foundUser.dataValues;
+      const { id, userName, firstName, lastName, email, gender, address, birthDate, picture, pokemons } = userWithPokemon;
       const userWithPokemonMapped = {
-         id, userName, firstName, lastName, email, gender, address, birthDate, picture, pokemons,
+        id, userName, firstName, lastName, email, gender, address, birthDate, picture, pokemons,
       };
       return userWithPokemonMapped;
     })
@@ -43,13 +42,29 @@ class UserRepository {
   }
 
   static async getUserByEmail(_email) {
-    return UserModel.findOne({ where: { email: _email} })
+    return UserModel.findOne({ where: { email: _email } })
       .then(foundUser => UserMapper.map(foundUser))
       .catch((err) => {
         throw new Error(err);
       });
   }
 
+  static async updateUser(userId, user, transaction){
+   await UserModel.update(user, 
+      { where: { id : userId,} , transaction  }
+      ).then(response => response)
+      .catch(err => {throw err});
+  
+  }
+
+  static async getUserById(userId){
+    return UserModel.findOne({
+       where: {
+         id : userId,
+       }
+     }).then(gettedUser => UserMapper.map(gettedUser))
+        .catch(err => { throw err });
+  }
 
   static async addUser(user, transaction) {
     return UserModel.create(user, { transaction })
@@ -62,6 +77,15 @@ class UserRepository {
   static async validateUser(userId, transaction) {
     return UserModel.update(
       { validated: true }, { where: { id: userId } }, { transaction },
+    ).then((_, updatedUser) => UserMapper.map(updatedUser))
+      .catch((err) => {
+        throw new Error(err);
+      });
+  }
+
+  static async resetPassword(userId, _password, transaction) {
+    return UserModel.update(
+      { password: _password }, { where: { id: userId }, returning: true, plain: true }, { transaction },
     ).then((_, updatedUser) => UserMapper.map(updatedUser))
       .catch((err) => {
         throw new Error(err);

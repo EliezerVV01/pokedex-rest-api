@@ -2,9 +2,34 @@ const UserService = require('../services/User');
 const Responses = require('./Responses');
 
 class UserController extends Responses {
+
+  static async getUserById(userId){
+    return UserService.getUserById(userId)
+                .then(response => this.responseOK({ body: response }))
+                .catch(err => this.createErrorResponse(err))
+  }
+
+  static async updateUser(userId, user){
+    return UserService.updateUser(userId, user)
+            .then(updatedUser => this.responseOK({body: updatedUser}))
+            .catch(err => this.createErrorResponse(err));
+  }
+
+  static async getUserByEmail(email){
+    return UserService.getUserByEmail(email)
+         .then(user => this.responseOK({body: user}))
+         .catch(err => this.createErrorResponse(err));
+  }
+  
   static async getUserWithPokemons(id) {
     return UserService.getUserWithPokemons(id)
       .then(userWithPokemons => this.responseOK({ body: userWithPokemons }))
+      .catch(err => this.createErrorResponse(err));
+  }
+
+  static async resetPassword(token, password) {
+    return UserService.resetPassword(token, password)
+      .then(response => this.responseOK({ body: response }))
       .catch(err => this.createErrorResponse(err));
   }
 

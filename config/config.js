@@ -21,7 +21,9 @@ CONFIG.email_validation_secret = process.env.EMAIL_VALIDATION_SECRET || 'shh';
 
 //WebApp Config
 
-CONFIG.webapp_link = process.env.WEBAPP_LINK || 'http://localhost:3000/validate';
+CONFIG.webapp_link = process.env.WEBAPP_LINK_VALIDATE || 'http://localhost:3000/validate';
+
+CONFIG.webapp_link_rest_pass = process.env.WEBAPP_LINK_RESET_PASS || 'http://localhost:3000/resetPassword';
 
 //Auth config
 CONFIG.auth_token_secret = process.env.AUTH_TOKEN_SECRET || 'shhh';
