@@ -82,7 +82,7 @@ api/
            
            /profilephoto on PUT => update user profile picture (recieve a file type png, jpg o jpeg) 
  
- ##More info (Important) 
+ ## More info (Important) 
   
  This rest-api is greatly consumed by the web app --> https://github.com/EliezerVV01/pokedex-web-app
            
