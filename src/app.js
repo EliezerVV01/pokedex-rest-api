@@ -17,7 +17,7 @@ sequelize
   });
 
 app.use(bodyParser.json());
-
+app.use('/uploads', express.static('uploads'));
 app.use(routes);
 
 const port = config.port;

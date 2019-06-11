@@ -1,6 +1,7 @@
 const User = require('./User');
 const Pokemon = require('./Pokemon');
 const Type = require('./Type');
+const PokemonUser = require('./PokemonUser');
 
 //Pokemon and User relationship many to many
 
@@ -8,14 +9,14 @@ User.belongsToMany(Pokemon, {
   through: 'PokemonUser',
   as: 'pokemons',
   foreignKey: 'userId',
-  targetKey: 'id'
+  targetKey: 'id',
 });
 
 Pokemon.belongsToMany(User, {
   through: 'PokemonUser',
   as: 'users',
   foreignKey: 'pokemonId',
-  targetKey: 'id'
+  targetKey: 'id',
 });
 
 //Pokemon and Type relationship many to many

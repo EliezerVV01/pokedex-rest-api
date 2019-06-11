@@ -7,10 +7,15 @@ const Token = require('./../utils/Token');
 const CONFIG = require('./../../config/config');
 
 class UserService {
-  static async getUserWithPokemons(id) {
-    const gettedUserWithPokemons = await UserRepository.getUserWithPokemons(id);
+  static async getUserWithPokemons(id, name, offset, limit) {
+    const gettedUserWithPokemons = await UserRepository.getUserWithPokemons(id, name, offset, limit);
     return gettedUserWithPokemons;
 
+  }
+
+  static async deleteAccount(userId){
+    const transaction = await UserModel.sequelize.transaction();
+    return await UserRepository.deleteAccount(userId, transaction);
   }
 
   static async getUserByUsername(username) {
@@ -23,12 +28,26 @@ class UserService {
     return gettedUser;
   }
 
+  static async updateProfilePhoto(userId, photoUrl){
+    console.log(userId, photoUrl );
+  const currentTransaction = await UserModel.sequelize.transaction();
+    try {
+      await UserRepository.updateProfilePhoto(userId, photoUrl, currentTransaction);
+       currentTransaction.commit();
+      const updatedUser = await this.getUserById(userId);
+      return updatedUser;
+    } catch (error) {
+      currentTransaction.rollback();
+      throw error;
+    }
+  }
+
   static async updateUser(userId, user) {
     const currentTransaction = await UserModel.sequelize.transaction();
     try {
-      if(!user){
+      if (!user) {
         const error = new Error('Missing user object');
-        error.code=400;
+        error.code = 400;
         throw error;
       }
       await UserRepository.updateUser(userId, user, currentTransaction);
@@ -48,6 +67,10 @@ class UserService {
       const err = new Error('User not found');
       err.code = 404;
       throw err;
+    }
+    if(gettedUser.picture){
+      let pictureUrl = CONFIG.server_url+'/'+gettedUser.picture;
+      gettedUser.picture = pictureUrl;
     }
     return gettedUser;
   }

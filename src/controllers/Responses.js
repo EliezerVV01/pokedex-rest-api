@@ -1,3 +1,5 @@
+
+
 class Responses {
   static responseOK({ body }) {
     return { status: 200, body };
@@ -28,6 +30,8 @@ class Responses {
       errorMessage: message,
     }
   }
+
+
 
   static createErrorResponse(err) {
     switch (err.code) {

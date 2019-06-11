@@ -5,6 +5,7 @@ const PokemonRoute = require('./PokemonRoute');
 
 
 const router = new Router();
+
 const apiRouter = new Router();
 
 apiRouter.use(cors());

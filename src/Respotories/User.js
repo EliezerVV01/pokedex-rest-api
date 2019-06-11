@@ -6,31 +6,99 @@ require('../models/relations');
 
 
 class UserRepository {
-  static async getUserWithPokemons(_id) {
-    return UserModel.findOne({
-      include: [{
-        model: PokemonModel,
-        as: 'pokemons',
-        required: false,
-        attributes: ['id', 'name', 'picture'],
-        through: { attributes: [] },
-      }],
+
+  static async deleteAccount(userId, transaction){
+   return await UserModel.destroy({
       where: {
-        id: _id,
-      },
-    }).then(foundUser => {
-      if (!foundUser.dataValues) foundUser
-      const userWithPokemon = foundUser.dataValues;
-      const { id, userName, firstName, lastName, email, gender, address, birthDate, picture, pokemons } = userWithPokemon;
-      const userWithPokemonMapped = {
-        id, userName, firstName, lastName, email, gender, address, birthDate, picture, pokemons,
-      };
-      return userWithPokemonMapped;
+        id: userId,
+      }, transaction
+    });
+  }
+
+  static async resetPassword(userId, _password, transaction) {
+    return UserModel.update(
+      { password: _password }, { where: { id: userId }, returning: true, plain: true }, { transaction },
+    ).then((_, updatedUser) => UserMapper.map(updatedUser))
+      .catch((err) => {
+        throw new Error(err);
+      });
+  }
+
+  static async updateUser(userId, user, transaction) {
+    await UserModel.update(user,
+      { where: { id: userId, }, transaction }
+    ).then(response => response)
+      .catch(err => { throw err });
+
+  }
+
+  static async updateProfilePhoto(userId, photoUrl, transaction) {
+    return UserModel.update(
+      { picture: photoUrl }, { where: { id: userId }, transaction } ,
+    ).then(response => response)
+      .catch(err => { throw err })
+  }
+
+  static async getUserWithPokemons(_id, _name, _offset, _limit) {
+    const Op = sequelize.Op;
+    const pokemons = [];
+    return PokemonModel.findAndCountAll({
+      include: [{
+        model: UserModel,
+        as: 'users',
+        required: true,
+        attributes: ['id', 'firstName'],
+        through: { attributes: [] },
+        where: { id: _id, },
+      }],
+      offset: _offset,
+      limit: _limit,
+      where: {  name: { [Op.like]: `%${_name}%` }, },
+
+    }).then(gettedPokemons => {
+      gettedPokemons.rows.map(pokemon => {
+        const { id, name, height, weight, picture, baseExperience } = pokemon.dataValues;
+        const gettedPokemon = {
+          id, name, height, weight, picture, baseExperience,
+        }
+        pokemons.push(gettedPokemon);
+      });
+      const response={
+        count: gettedPokemons,
+        pokemons: pokemons,
+      }
+      return response;
     })
       .catch((err) => {
         console.log(err);
         throw new Error(err);
       });
+
+    /* return UserModel.findOne({
+       include: [{
+         model: PokemonModel,
+         as: 'pokemons',
+         required: false,
+         attributes: ['id', 'name', 'picture'],
+         through: { attributes: [] },
+         where: {  name: { [Op.like]: `%${_name}%` }, },
+       }],
+       where: {
+         id: _id,
+       },
+     }).then(foundUser => {
+       if (!foundUser || !foundUser.dataValues) foundUser
+       const userWithPokemon = foundUser.dataValues;
+       const { id, userName, firstName, lastName, email, gender, address, birthDate, picture, pokemons } = userWithPokemon;
+       const userWithPokemonMapped = {
+         id, userName, firstName, lastName, email, gender, address, birthDate, picture, pokemons,
+       };
+       return userWithPokemonMapped;
+     })
+       .catch((err) => {
+         console.log(err);
+         throw new Error(err);
+       });*/
   }
 
   static async getUserByUsername(_username) {
@@ -49,21 +117,13 @@ class UserRepository {
       });
   }
 
-  static async updateUser(userId, user, transaction){
-   await UserModel.update(user, 
-      { where: { id : userId,} , transaction  }
-      ).then(response => response)
-      .catch(err => {throw err});
-  
-  }
-
-  static async getUserById(userId){
+  static async getUserById(userId) {
     return UserModel.findOne({
-       where: {
-         id : userId,
-       }
-     }).then(gettedUser => UserMapper.map(gettedUser))
-        .catch(err => { throw err });
+      where: {
+        id: userId,
+      }
+    }).then(gettedUser => UserMapper.map(gettedUser))
+      .catch(err => { throw err });
   }
 
   static async addUser(user, transaction) {
@@ -77,15 +137,6 @@ class UserRepository {
   static async validateUser(userId, transaction) {
     return UserModel.update(
       { validated: true }, { where: { id: userId } }, { transaction },
-    ).then((_, updatedUser) => UserMapper.map(updatedUser))
-      .catch((err) => {
-        throw new Error(err);
-      });
-  }
-
-  static async resetPassword(userId, _password, transaction) {
-    return UserModel.update(
-      { password: _password }, { where: { id: userId }, returning: true, plain: true }, { transaction },
     ).then((_, updatedUser) => UserMapper.map(updatedUser))
       .catch((err) => {
         throw new Error(err);

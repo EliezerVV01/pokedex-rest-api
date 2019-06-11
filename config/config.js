@@ -2,7 +2,9 @@ require('dotenv').config();
 
 const CONFIG = {};
 
-CONFIG.port = process.env.PORT || '3000';
+CONFIG.port = process.env.PORT || '8080';
+CONFIG.host = process.env.HOST || 'localhost';
+CONFIG.server_url = process.env.SERVER_URL || 'localhost:8080';
 
 //  DB config
 

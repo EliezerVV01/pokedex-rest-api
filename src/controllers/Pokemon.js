@@ -4,7 +4,8 @@ const Responses = require('./Responses');
 class PokemonController extends Responses {
 
   static async deletePokemon(userId, pokemonId) {
-    return PokemonService.deletePokemon(userId, pokemonId)
+
+    return await  PokemonService.deletePokemon(userId, pokemonId)
       .then(gettedPokemons => this.responseOK({ body: gettedPokemons }))
       .catch(err => this.createErrorResponse(err));
   }

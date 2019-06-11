@@ -3,6 +3,19 @@ const Responses = require('./Responses');
 
 class UserController extends Responses {
 
+  static async deleteAccount(userId){
+    return UserService.deleteAccount(userId)
+               .then(res => this.responseOK({ body: res }))
+               .catch(err => this.createErrorResponse(err))
+  }
+
+  static async updateProfilePhoto(userId, photoUrl){
+    
+ return UserService.updateProfilePhoto(userId, photoUrl)
+                .then(res => this.responseOK({ body: res }))
+                .catch(err => this.createErrorResponse(err))
+  }
+
   static async getUserById(userId){
     return UserService.getUserById(userId)
                 .then(response => this.responseOK({ body: response }))
@@ -21,8 +34,8 @@ class UserController extends Responses {
          .catch(err => this.createErrorResponse(err));
   }
   
-  static async getUserWithPokemons(id) {
-    return UserService.getUserWithPokemons(id)
+  static async getUserWithPokemons(id, name, offset, limit) {
+    return UserService.getUserWithPokemons(id, name, offset, limit)
       .then(userWithPokemons => this.responseOK({ body: userWithPokemons }))
       .catch(err => this.createErrorResponse(err));
   }
