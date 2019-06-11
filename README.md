@@ -9,8 +9,8 @@ This is an api of a pokedex.
 3. Open the terminal and run "npm install"
 4. Create in the root of the project a file named ".env" and write this with its respective values
 
-HOST=
-PORT=
+HOST=                                          
+PORT=                       
 SERVER_URL=
 DB_HOST=
 DB_USER=
