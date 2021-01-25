@@ -2,7 +2,7 @@ const PokemonModel = require('../models/Pokemon');
 const TypeModel = require('../models/Type');
 const PokemonUserModel = require('./../models/PokemonUser');
 const PokemonWithNameMapper = require('../Domain/mappers/PokemonWithName');
-const sequelize = require('./../../config/sequelize');
+const { Op } = require("sequelize");
 require('../models/relations');
 
 class PokemonRepository {
@@ -20,7 +20,6 @@ class PokemonRepository {
   }
 
   static async getPokemonsbyName(name) {
-    const Op = sequelize.Op;
     return PokemonModel.findAll({
       where: {
         name: { [Op.like]: `%${name}%` },

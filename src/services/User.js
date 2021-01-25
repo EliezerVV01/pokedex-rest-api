@@ -1,4 +1,3 @@
-const bcrypt = require('bcrypt');
 const UserRepository = require('./../Respotories/User');
 const UserModel = require('./../models/User');
 const UserValidator = require('../utils/validators/User');
@@ -86,8 +85,7 @@ class UserService {
       }
       const decodedToken = Token.verifyToken(token, CONFIG.reset_pass_token_secret);
       const userId = decodedToken.data;
-      const passwordHashed = await bcrypt.hash(password, 10);
-      const response = await UserRepository.resetPassword(userId, passwordHashed, currentTransaction);
+      const response = await UserRepository.resetPassword(userId, password, currentTransaction);
       currentTransaction.commit();
       return response;
     } catch (error) {
@@ -161,7 +159,6 @@ class UserService {
         error.code = 409;
         throw error;
       }
-      userToCreate.password = await bcrypt.hash(userToCreate.password, 10);
       const pushedUser = await UserRepository.addUser(userToCreate, currentTransaction);
       const token = Token.generateToken(pushedUser.id, CONFIG.email_validation_secret, 15);
       EmailSender.sendEmail(pushedUser.email, 'Verify your account', `<p>You need to click the next link to verify your account: ${CONFIG.webapp_link}/${token} </p>`);
@@ -180,8 +177,7 @@ class UserService {
     // compare it with the password send it in the fist time
     const user = await UserRepository.login(_user);
     if (user) {
-      const match = await bcrypt.compare(_user.password, user.password);
-      if (match) {
+      if (_user.password === user.password) {
         const gettedToken = Token.generateToken({ id: user.id, name: user.name, email: user.email },
           CONFIG.auth_token_secret, 10000);
         const data = {

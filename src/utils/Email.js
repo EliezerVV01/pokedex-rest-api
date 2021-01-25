@@ -20,6 +20,7 @@ class Email {
 
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
+        console.log(err);
         const error = new Error('Ups! Something went wrong trynig to send the validation email! Please Sign Up again');
         error.code = 500;
         throw error; 

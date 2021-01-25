@@ -3,7 +3,7 @@ const UserMapper = require('../Domain/mappers/User');
 const sequelize = require('./../../config/sequelize');
 const PokemonModel = require('./../models/Pokemon');
 require('../models/relations');
-
+const { Op } = require("sequelize");
 
 class UserRepository {
 
@@ -40,7 +40,6 @@ class UserRepository {
   }
 
   static async getUserWithPokemons(_id, _name, _offset, _limit) {
-    const Op = sequelize.Op;
     const pokemons = [];
     return PokemonModel.findAndCountAll({
       include: [{
@@ -73,32 +72,6 @@ class UserRepository {
         console.log(err);
         throw new Error(err);
       });
-
-    /* return UserModel.findOne({
-       include: [{
-         model: PokemonModel,
-         as: 'pokemons',
-         required: false,
-         attributes: ['id', 'name', 'picture'],
-         through: { attributes: [] },
-         where: {  name: { [Op.like]: `%${_name}%` }, },
-       }],
-       where: {
-         id: _id,
-       },
-     }).then(foundUser => {
-       if (!foundUser || !foundUser.dataValues) foundUser
-       const userWithPokemon = foundUser.dataValues;
-       const { id, userName, firstName, lastName, email, gender, address, birthDate, picture, pokemons } = userWithPokemon;
-       const userWithPokemonMapped = {
-         id, userName, firstName, lastName, email, gender, address, birthDate, picture, pokemons,
-       };
-       return userWithPokemonMapped;
-     })
-       .catch((err) => {
-         console.log(err);
-         throw new Error(err);
-       });*/
   }
 
   static async getUserByUsername(_username) {
@@ -144,7 +117,6 @@ class UserRepository {
   }
 
   static async login(user) {
-    const Op = sequelize.Op;
     return UserModel.findOne({
       where:
       {
